@@ -3,4 +3,5 @@
 * 1.限制11位数。
 * 2.中间“-”分开。
 * 3.可以修改号码。
+<br>
 ![](https://github.com/JALAJAJ/Phone_Number_Show/raw/master/screenshot.png)
