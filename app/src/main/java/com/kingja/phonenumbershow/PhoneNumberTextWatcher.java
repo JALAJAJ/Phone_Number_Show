@@ -30,14 +30,14 @@ public class PhoneNumberTextWatcher implements TextWatcher {
 
     public PhoneNumberTextWatcher(EditText editText) {
         this.editText = editText;
-        PhoneNumberTextWatcher.this.editText.setOnKeyListener(new View.OnKeyListener() {
+        editText.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 /**
                  * 加外层判断可以屏蔽调用两次
                  */
-                if (event.getAction()==KeyEvent.ACTION_DOWN){
-                    if (keyCode==KeyEvent.KEYCODE_DEL){
+                if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                    if (keyCode == KeyEvent.KEYCODE_DEL) {
                         mDelte = true;
                     }
                 }
@@ -52,7 +52,6 @@ public class PhoneNumberTextWatcher implements TextWatcher {
     public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
 
-
     }
 
     @Override
@@ -62,24 +61,26 @@ public class PhoneNumberTextWatcher implements TextWatcher {
 
     @Override
     public void afterTextChanged(Editable s) {
-
-        if (mDelte){
-            mDelte=false;
+        /**
+         * 如果按下删除键则不进行字符串判断，这样可以屏蔽删除>重新排列>删除>重新排列..导致类似删除无效的情况发生。
+         */
+        if (mDelte) {
+            mDelte = false;
             return;
         }
         String inputNumber = s.toString().replace("-", "");
-        String a = "";
-        String b = "";
-        String c = "";
-        if (inputNumber.length()>=3){
+        String a = "";//存储第一段的三位数
+        String b = "";//存储第二段的四位数
+        String c = "";//存储第三段的四位数
+        if (inputNumber.length() >= 3) {
             a = inputNumber.substring(0, 3);
-        }else if (inputNumber.length() <3) {
+        } else if (inputNumber.length() < 3) {
             a = inputNumber.substring(0, inputNumber.length());
         }
         if (inputNumber.length() >= 7) {
             b = inputNumber.substring(3, 7);
             c = inputNumber.substring(7, inputNumber.length());
-        }else if(inputNumber.length() >3 && inputNumber.length() <7){
+        } else if (inputNumber.length() > 3 && inputNumber.length() < 7) {
             b = inputNumber.substring(3, inputNumber.length());
         }
         StringBuilder sb = new StringBuilder();
@@ -98,6 +99,9 @@ public class PhoneNumberTextWatcher implements TextWatcher {
         if (c.length() > 0) {
             sb.append(c);
         }
+        /**
+         * 下面先去除改变监听是为了避免editText.setText(sb.toString())导致的无限递归
+         */
         editText.removeTextChangedListener(this);
         editText.setText(sb.toString());
         editText.setSelection(editText.getText().toString().length());
